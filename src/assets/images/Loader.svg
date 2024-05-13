@@ -1,0 +1,62 @@
+<svg
+  width="100px"
+  height="100px"
+  viewBox="0 0 100 100"
+  preserveAspectRatio="xMidYMid"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle cx="30" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0"
+    />
+  </circle>
+  <circle cx="50" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0.166s"
+    />
+  </circle>
+  <circle cx="70" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0.333s"
+    />
+  </circle>
+  <circle cx="30" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0.5s"
+    />
+  </circle>
+  <circle cx="50" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0.666s"
+    />
+  </circle>
+  <circle cx="70" cy="50" r="10" fill="#8F211D">
+    <animate
+      attributeName="opacity"
+      values="0;1;0"
+      dur="1s"
+      repeatCount="indefinite"
+      begin="0.833s"
+    />
+  </circle>
+</svg>

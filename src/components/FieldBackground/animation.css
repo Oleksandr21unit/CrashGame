@@ -1,0 +1,15 @@
+@keyframes slide {
+    from { left: 0px; }
+    to {
+        left: 1536px;
+        /* transform: translate(-90%) */
+    }
+}
+
+@-webkit-keyframes slide {
+    from { left: 0px; }
+    to {
+        left: 1536px;
+        /* transform: translate(-90%) */
+    }
+}
