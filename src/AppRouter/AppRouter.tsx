@@ -47,7 +47,7 @@ const AppRouter: React.FC = () => {
             />
           );
         })}
-        <Route path={'*'} element={<Navigate to={'/'} />} />
+        <Route path={'*'} element={<Navigate to={'/play'} />} />
       </Route>
     </Routes>
   );
