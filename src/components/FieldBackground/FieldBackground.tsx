@@ -78,33 +78,31 @@ const FieldBackground = () => {
     }
 
     const StartAnimation = () => {
-        if (!animationRunning) {
-            setIsReadyMessage(true)
+        setIsReadyMessage(true)
+        setTimeout(() => {
+            setIsReadyMessage(false)
+            setAnmationRunning(true)
+        }, 3000)
+        const fieldBg1 = document.getElementById("field-bg-1");
+        const fieldBg2 = document.getElementById("field-bg-2");
+        const fieldBg3 = document.getElementById("field-bg-3");
+        const fieldBg4 = document.getElementById("field-bg-4");
+
+        if (fieldBg1 && fieldBg2 && fieldBg3 && fieldBg4) {
+            // fieldBg1.style.animation = 'slide 15s ease-in infinite'
+            fieldBg4.style.animation = 'slide 11s ease-in infinite'
+            fieldBg3.style.animation = 'slide 16s ease-in infinite'
+            fieldBg2.style.animation = 'slide 21s ease-in infinite'
+            // background.style.animation = 'slide 15s ease-in infinite'
             setTimeout(() => {
-                setIsReadyMessage(false)
-                setAnmationRunning(true)
-            }, 3000)
-            const fieldBg1 = document.getElementById("field-bg-1");
-            const fieldBg2 = document.getElementById("field-bg-2");
-            const fieldBg3 = document.getElementById("field-bg-3");
-            const fieldBg4 = document.getElementById("field-bg-4");
-    
-            if (fieldBg1 && fieldBg2 && fieldBg3 && fieldBg4) {
-                // fieldBg1.style.animation = 'slide 15s ease-in infinite'
-                fieldBg4.style.animation = 'slide 11s ease-in infinite'
-                fieldBg3.style.animation = 'slide 16s ease-in infinite'
-                fieldBg2.style.animation = 'slide 21s ease-in infinite'
-                // background.style.animation = 'slide 15s ease-in infinite'
-                setTimeout(() => {
-                    fieldBg4.style.animation = 'slide 10s linear infinite'
-                }, 11000)
-                setTimeout(() => {
-                    fieldBg3.style.animation = 'slide 15s linear infinite'
-                }, 16000)
-                setTimeout(() => {
-                    fieldBg2.style.animation = 'slide 20s linear infinite'
-                }, 21000)
-            }
+                fieldBg4.style.animation = 'slide 10s linear infinite'
+            }, 11000)
+            setTimeout(() => {
+                fieldBg3.style.animation = 'slide 15s linear infinite'
+            }, 16000)
+            setTimeout(() => {
+                fieldBg2.style.animation = 'slide 20s linear infinite'
+            }, 21000)
         }
     }
 
@@ -126,7 +124,7 @@ const FieldBackground = () => {
     return (
         <div className='relative h-[40%] overflow-hidden'>
 
-            {(!animationRunning || !isNewGameSession) && !(isCashedOut || isCrashed) ?
+            {!isNewGameSession && !(isCashedOut || isCrashed) ?
                 <div className='absolute z-[5] top-[16px] h-[62px] w-[80%] mx-[10%] flex items-center justify-center bg-whiteOpaque rounded-[16px]'>
                     {!isReadyMessage ?
                         <p className='uppercase font-[700] text-[25px]'>
