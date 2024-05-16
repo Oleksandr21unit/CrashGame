@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { GameContextProvider } from './context/GameContext.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter basename='/CrashGame'>
+  <BrowserRouter>
     <GameContextProvider>
       {/* <React.StrictMode> */}
         <App />
