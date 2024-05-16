@@ -361,6 +361,12 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             return newGameData
         })
         setIsCashedOut(false);
+        setSelectedHorse(null)
+        setIsCashedOut(false)
+        setIsBonus(false)
+        setTimerDisplay(0)
+        setMultiplierDisplay(1)
+        setResetBtn(false)
         currentPosition = 0
         // Clear result message
         setResult('');
