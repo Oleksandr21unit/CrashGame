@@ -26,7 +26,7 @@ const PlayField = () => {
 
     useEffect(() => {
         console.log('horse results!!', horseResults)
-        const runningHorses = horseResults.filter((el)=> el.running)
+        // const runningHorses = horseResults.filter((el)=> el.running)
         if(horseResults.length){
             horseResults.forEach((el, index) => {
                 if (!el.running && (horseResults[index+1]?.running || index === 3)) {

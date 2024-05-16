@@ -7,7 +7,7 @@ import { GameContext } from '../../context/GameContext'
 
 const BottomUI = () => {
     const {gameData, currentBet, isCashedOut, selectedHorse, resetBtn, resetBtnOnclick, handleSelectHorse, handleMinus, handlePlus, setCurrentBet, betBtnOnclick, cashOutBtnOnclick} = useContext(GameContext)
-    const {isMoving, isNewGameSession, isCrashed} = gameData;
+    const {isMoving, isCrashed} = gameData;
 
     const addToBet = (amount: number) => {
         if (!isMoving){

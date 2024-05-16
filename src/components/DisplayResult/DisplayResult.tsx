@@ -5,7 +5,7 @@ const DisplayResult = () => {
     const {gameData, horseResults, selectedHorse, isCashedOut} = useContext(GameContext);
     const [gameDataSnap] = useState(gameData)
     const [horseResultsSnap] = useState(horseResults)
-    const {isCrashed, betAmount, multiplier, crashMultiplier} = gameDataSnap
+    const {isCrashed, betAmount, crashMultiplier} = gameDataSnap
     const standingHorses = horseResultsSnap.filter((el) => el.running) 
     const [isLastHorse] = useState(standingHorses.length === 1 && standingHorses[0].number === selectedHorse)
 
