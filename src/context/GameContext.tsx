@@ -352,10 +352,11 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         // Reset game state variables
         setGameData(prev => 
         {
-            const newGameData = Object.assign({}, prev);
+            const newGameData = Object.assign({}, initialGameData);
             newGameData.isMoving = false;
             newGameData.multiplier = 1;
             newGameData.betAmount = 1;
+            newGameData.balance = prev.balance;
             newGameData.crashPosition = 0;
             return newGameData
         })
