@@ -18,7 +18,7 @@ const Header = () => {
             </div>
 
             <div className='flex items-center gap-[8px]'>
-                <p className='font-[400] text-[14px]'>${balance}</p>
+                <p className='font-[400] text-[14px]'>${balance.toFixed(2)}</p>
                 <AccountIcon />
             </div>
         </div>

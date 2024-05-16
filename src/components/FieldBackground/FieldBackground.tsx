@@ -5,29 +5,17 @@ import Vector3 from './../../assets/images/sky/Vector-3.png';
 import { useContext, useEffect, useState } from 'react';
 import { GameContext } from '../../context/GameContext';
 import DisplayResult from '../DisplayResult';
-// import StarBonusIcon from './../../assets/icons/starBonusIcon.svg?react';
+import StarBonusIcon from './../../assets/icons/starBonusIcon.svg?react';
 import "./animation.css";
 
 const FieldBackground = () => {
-    const {gameData, multiplierDisplay, selectedHorse} = useContext(GameContext);
-    const {isMoving, isNewGameSession} = gameData
+    const {gameData, multiplierDisplay, selectedHorse, horseResults, isCashedOut} = useContext(GameContext);
+    const {isMoving, isNewGameSession, isCrashed} = gameData
     const [animationRunning, setAnmationRunning] = useState(false)
     const [isReadyMessage, setIsReadyMessage] = useState(false)
     const [multiplierValue, setMultiplierValue] = useState(multiplierDisplay);
+    const [isDisplayResult, setIsDisplayResult] = useState<boolean | null>(null)
     // const lastHorse = horseResults[3].number === selectedHorse
-
-    const animateValue = (obj: HTMLElement, start:number, end:number, duration: number) => {
-        let startTimestamp: DOMHighResTimeStamp | null = null;
-        const step = (timestamp: DOMHighResTimeStamp) => {
-          if (!startTimestamp) startTimestamp = timestamp;
-          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-          obj.innerHTML = (progress * (end - start) + start).toFixed(2);
-          if (progress < 1) {
-            window.requestAnimationFrame(step);
-          }
-        };
-        window.requestAnimationFrame(step);
-    }
     
     useEffect(() => {
         const display = document.getElementById("multiplierValue");
@@ -36,6 +24,58 @@ const FieldBackground = () => {
         }
         setMultiplierValue(multiplierDisplay)
     }, [multiplierDisplay])
+
+
+    useEffect(() => {
+        if (isMoving && !animationRunning) {
+            console.log('StartAnimation')
+            StartAnimation()
+        } else if (!isMoving && animationRunning) {
+            console.log('StopAnimation', StopAnimation)
+            StopAnimation()
+        }
+    }, [isMoving])
+
+    useEffect(() => {
+        if (horseResults.filter((el) => el.running).length === 1) {
+            bonusAnimation();
+        }
+    }, [horseResults])
+
+    useEffect(() => {
+        if (isDisplayResult === null && (isCashedOut || isCrashed)) {
+            setIsDisplayResult(true);
+            setTimeout(() => {
+                setIsDisplayResult(false)
+            }, 6000)
+        }
+    }, [isCashedOut, isCrashed])
+
+    const animateValue = (obj: HTMLElement, start:number, end:number, duration: number) => {
+        let startTimestamp: DOMHighResTimeStamp | null = null;
+        const step = (timestamp: DOMHighResTimeStamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          obj.innerHTML = `${(progress * (end - start) + start).toFixed(2)}X`;
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    const bonusAnimation = () => {
+        const starBonus = document.getElementById('starBonus');
+        const result = document.getElementById('multiplierValue');
+        if (starBonus && result) {
+            starBonus.style.animation = 'bonus 3s ease-out'
+            starBonus.style.visibility = 'visible';
+            setTimeout(() => {
+                result.style.color = '#FEC700';
+                starBonus.style.visibility = 'hidden';
+            }, 3000)
+        }
+    }
 
     const StartAnimation = () => {
         if (!animationRunning) {
@@ -76,27 +116,17 @@ const FieldBackground = () => {
 
         if (fieldBg1 && fieldBg2 && fieldBg3 && fieldBg4) {
             setAnmationRunning(false);
-            // fieldBg1.style.animation = 
-            fieldBg2.style.animation = 'slide 3s ease-out';
+            fieldBg1.style.animation = 'slide 9s ease-out';
+            fieldBg2.style.animation = 'slide 7s ease-out';
             fieldBg3.style.animation = 'slide 5s ease-out';
-            fieldBg4.style.animation = 'slide 7s ease-out';
+            fieldBg4.style.animation = 'slide 3s ease-out';
         }
     }
-
-    useEffect(() => {
-        if (isMoving && !animationRunning) {
-            console.log('StartAnimation')
-            StartAnimation()
-        } else if (!isMoving && animationRunning) {
-            console.log('StopAnimation', StopAnimation)
-            StopAnimation()
-        }
-    }, [isMoving])
 
     return (
         <div className='relative h-[40%] overflow-hidden'>
 
-            {!animationRunning || !isNewGameSession ?
+            {(!animationRunning || !isNewGameSession) && !(isCashedOut || isCrashed) ?
                 <div className='absolute z-[5] top-[16px] h-[62px] w-[80%] mx-[10%] flex items-center justify-center bg-whiteOpaque rounded-[16px]'>
                     {!isReadyMessage ?
                         <p className='uppercase font-[700] text-[25px]'>
@@ -109,22 +139,23 @@ const FieldBackground = () => {
                     }
                 </div>
                 :
-                // <div className='z-[10] absolute top-[16px] w-full'>
+                <div className='z-[10] absolute top-[16px] w-full flex justify-center'>
                     <p
                         className='w-full z-[10] absolute top-[16px] w-full text-center text-darkblue uppercase font-[800] text-[48px]'
                         id='multiplierValue'
                         >
                         {multiplierValue && multiplierValue.toFixed(2)}X
                     </p>
-                //     {/* <StarBonusIcon
-                //         style={{
-                //             // visibility: 'hidden',
-                //         }}
-                //     /> */}
-                // {/* </div> */}
+                    <StarBonusIcon
+                        id='starBonus'
+                        style={{
+                            visibility: 'hidden',
+                        }}
+                    />
+                </div>
             }
 
-            {isNewGameSession && !isMoving &&
+            {(isCashedOut || isCrashed) && isDisplayResult &&
                 <DisplayResult />
             }
 

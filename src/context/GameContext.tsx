@@ -1,14 +1,15 @@
-import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface GameContextType {
-    gameData: any,
+    gameData: GameDataType,
     selectedHorse: number |  null,
     currentBet: number,
     multiplierDisplay?: number,
     resetBtn?: boolean,
     timerDisplay: number,
     horseResults: {running: boolean, number: number}[],
-    isReset: boolean
+    isReset: boolean,
+    isCashedOut: boolean,
     resetGameAndUpdatePlayerData?: () => void,
     setCurrentBet?: React.Dispatch<React.SetStateAction<number>>,
     handleSelectHorse?: (number: number) => () => void,
@@ -24,11 +25,11 @@ interface GameDataType {
     isMoving: boolean,
     // currentPosition: number,
     multiplier: number,
+    crashMultiplier: number,
     betAmount: number,
     crashPosition: number,
     startTime?: number,
     balance: number,
-    isCashedOut: boolean,
     isCrashed: boolean,
     isNewGameSession: boolean,
 }
@@ -37,22 +38,23 @@ const initialGameData: GameDataType = {
     isMoving: false,
     // currentPosition: 0,
     multiplier: 1,
+    crashMultiplier: 0,
     betAmount: 0,
     crashPosition: 0,
     startTime: undefined,
     balance: 100,
-    isCashedOut: false,
     isCrashed: false,
     // Define a variable to track if a new game session has started
     isNewGameSession: false,
 }
 
 export const GameContext = createContext<GameContextType>({
-    gameData: undefined,
+    gameData: initialGameData,
     selectedHorse: null,
     currentBet: 1,
     timerDisplay: 0,
     isReset: false,
+    isCashedOut: false,
     horseResults: [{running: true, number: 1}, {running: true, number: 2}, {running: true, number: 3}, {running: true, number: 4}],
 });
 
@@ -70,7 +72,9 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [gameData, setGameData] = useState<GameDataType>(initialGameData);
     const [selectedHorse, setSelectedHorse] = useState<number | null>(null)
     const [horseResults, setHorseResults] = useState(shuffleArray([{running: true, number: 1}, {running: true, number: 2}, {running: true, number: 3}, {running: true, number: 4}]))
-    const [currentBet, setCurrentBet] = useState<number>(1)
+    const [currentBet, setCurrentBet] = useState<number>(1);
+    const [isCashedOut, setIsCashedOut] = useState(false);
+    const [isBonus, setIsBonus] = useState(false);
     // const [currentPosition, setCurrentPosition] = useState<number>(0);
     let currentPosition = 0
     const [timerDisplay, setTimerDisplay] = useState<number>(0)
@@ -79,6 +83,8 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [result, setResult] = useState<string>('')
     const [resetBtn, setResetBtn] = useState(false)
     const [outcome] = useState('');
+    let timeoutId = useRef<any>(null);
+    let animationFrameId = useRef<any>(null);
     const players: any = {};
     let horseSafeCounter = 10;
     let isReset = false;
@@ -94,7 +100,9 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }, [gameData.isMoving])
 
     const handleSelectHorse = (number:number) => () => {
-        setSelectedHorse(number)
+        if (!gameData.isMoving) {
+            setSelectedHorse(number)
+        }
     }
 
     const handleMinus = () => {
@@ -147,9 +155,10 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     function moveDot() {
 
-        if (gameData.isMoving && gameData.startTime && !gameData.isCashedOut) {
+        if (gameData.isMoving && gameData.startTime) {
             const currentTime = new Date().getTime();
             const elapsedTime = (currentTime - gameData.startTime) / 1000;
+            let bonus = 0;
             setTimerDisplay(elapsedTime);
   
             // Calculate RNG based on currentPosition
@@ -158,9 +167,15 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
             // Calculate crash multiplier using the provided formula
             const E = 100; // Extreme value or limit
-            const crashMultiplier = ((E * 100 - RNG) / (E - RNG)) / 100;
+            console.log ("horseResults.filter((el) => {el.running}).length === 1 && !isBonus", horseResults.filter((el) => (el.running)))
+            if (horseResults.filter((el) => (el.running)).length === 1 && !isBonus) {
+                setIsBonus(true);
+                bonus += 2;
+                console.log('adding bonus', bonus)
+            }
+            const crashMultiplier = (((E * 100 - RNG) / (E - RNG)) / 100) + bonus;
             console.log('crashMultiplier', crashMultiplier)
-            if (crashMultiplier > gameData.multiplier && !gameData.isCashedOut && !gameData.isCrashed) {
+            if (crashMultiplier > gameData.multiplier && !gameData.isCrashed) {
                 setGameData(prev => {
                     const newGameData = Object.assign({}, prev);
                     // newGameData.multiplier += crashMultiplier - 1;
@@ -183,17 +198,18 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
             if (Math.random() <= crashChance && horseResults.filter(el => el.running === true).length === 1 && horseSafeCounter < 2) { 
                 console.log('crashed!, out of horses — ', horseResults)
-                stopGame();
                 const newPrev = [...horseResults]
                 newPrev.find((el) => {
                     if (el.running === true){
                         el.running = false;
-                        if (crashMultiplier > gameData.multiplier && !gameData.isCashedOut && !gameData.isCrashed) {
+                        if (crashMultiplier > gameData.multiplier && !gameData.isCrashed) {
                             setGameData(prev => {
                                 const newGameData = Object.assign({}, prev);
                                 // newGameData.multiplier += crashMultiplier - 1;
                                 newGameData.multiplier = crashMultiplier
-                                newGameData.isCrashed = selectedHorse === el.number
+                                newGameData.crashMultiplier = gameData.crashMultiplier === 0 ? crashMultiplier : gameData.crashMultiplier
+                                newGameData.isCrashed = selectedHorse === el.number && !isCashedOut ? true : prev.isCrashed
+                                newGameData.isNewGameSession = false // Reset isNewGameSession flag
                                 newGameData.isMoving = false
                                 setMultiplierDisplay(newGameData.multiplier); // Update multiplier display in real-time
                                 return newGameData
@@ -202,6 +218,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
                         return el
                     }
                 })
+                stopGame();
                 setHorseResults(newPrev)
                 currentPosition++
                 return
@@ -211,12 +228,13 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
                 newPrev.find((el) => {
                     if (el.running === true){
                         el.running = false;
-                        if (!gameData.isCashedOut && !gameData.isCrashed) {
+                        if (!gameData.isCrashed) {
                             setGameData(prev => {
                                 const newGameData = Object.assign({}, prev);
                                 // newGameData.multiplier += crashMultiplier - 1;
                                 newGameData.multiplier = crashMultiplier
-                                newGameData.isCrashed = selectedHorse === el.number
+                                newGameData.isCrashed = selectedHorse === el.number && !isCashedOut ? true : prev.isCrashed
+                                newGameData.crashMultiplier = gameData.crashMultiplier === 0 && selectedHorse === el.number ? crashMultiplier : 0
                                 setMultiplierDisplay(newGameData.multiplier); // Update multiplier display in real-time
                                 return newGameData
                             });
@@ -226,24 +244,17 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
                 })
                 setHorseResults(newPrev)
                 horseSafeCounter = 5
-                if (crashMultiplier > gameData.multiplier && !gameData.isCashedOut && !gameData.isCrashed) {
-                    setGameData(prev => {
-                        const newGameData = Object.assign({}, prev);
-                        // newGameData.multiplier += crashMultiplier - 1;
-                        newGameData.multiplier = crashMultiplier
-                        setMultiplierDisplay(newGameData.multiplier); // Update multiplier display in real-time
-                        return newGameData
-                    });
-                }
-                if(gameData.isMoving){setTimeout(
-                    () => requestAnimationFrame(moveDot),
+                if(gameData.isMoving){
+                    timeoutId.current = setTimeout(
+                    () => animationFrameId.current = requestAnimationFrame(moveDot),
                     700
                 )}
             } else {
                 console.log('run continues', multiplierDisplay, 'horseSafeCounter', horseSafeCounter)
                 horseSafeCounter--
-                if(gameData.isMoving){setTimeout(
-                    () => requestAnimationFrame(moveDot),
+                if(gameData.isMoving){
+                    timeoutId.current = setTimeout(
+                    () => animationFrameId.current = requestAnimationFrame(moveDot),
                     700
                 )}
             }
@@ -283,6 +294,10 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         const currentTime = new Date().getTime();
         const elapsedTime = gameData.startTime ? (currentTime - gameData.startTime) / 1000 : 0;
         setTimerDisplay(elapsedTime);
+        console.log('timeoutId.current, animationFrameId.current', timeoutId.current, animationFrameId.current)
+        clearTimeout(timeoutId.current);
+        cancelAnimationFrame(animationFrameId.current);
+
   
         // const tolerance = 5; // Adjust this value as needed
         // const validBetAmount = Math.max(currentBet, 0);
@@ -301,74 +316,6 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             return;
         }
   
-        // let outcomeText;
-        // let validPayout = 0; // Initialize validPayout variable
-  
-        // if (gameData.isCashedOut) {
-        //     // Handle cash-out scenario
-        
-        //     // Calculate the multiplier at the time of cashing out
-        //     const cashOutMultiplier = gameData.multiplier;
-        
-        //     // Calculate the valid payout based on the cash-out multiplier
-        //     validPayout = validBetAmount * cashOutMultiplier;
-        
-        //     setGameData({
-        //         ...gameData,
-        //         // Add the valid payout (winnings) to the balance
-        //         balance: gameData.balance + validPayout,
-                
-        //     })
-        
-        //     // Update the balance display to reflect the updated balance
-        //     setBalanceDisplay(`Balance: ${gameData.balance.toFixed(2)} credits`);
-        
-        //     // Set outcome text to 'Cash Out!'
-        //     outcomeText = 'Cash Out!';
-        
-        //     // Display the result message indicating cash out details
-        //     setResult(`You cashed out at position ${currentPosition}px. You won ${validPayout.toFixed(2)} credits. Current balance: ${gameData.balance.toFixed(2)} credits!`);
-        
-        //     // Log cash out position, multiplier, bet amount, and output
-        //     console.log(`Cash Out Position: ${currentPosition}px`);
-        //     console.log(`Multiplier: ${cashOutMultiplier.toFixed(2)}`);
-        //     // console.log(`Bet Amount: ${validBetAmount}`);
-        //     console.log(`Output: You won ${validPayout.toFixed(2)} credits. Current balance: ${gameData.balance.toFixed(2)} credits!`);
-        
-        //     // Call displayResult() to update the results section
-        //     // displayResult(validBetAmount, cashOutMultiplier, validPayout, outcomeText); // Pass validPayout as winnings
-  
-        
-        //     // Update balance display
-        //     updateBalanceDisplay();
-        
-        //     // Show reset button
-        //     setResetBtn(true); // Show reset button
-        // } else {
-        //     // Handle crash scenario
-        
-        //     // Subtract the bet amount from the balance
-        //     // balance -= validBetAmount;
-        
-        //     outcomeText = 'Crash'; // Set outcome to 'Crash'
-        //     setResult(`You crashed at position ${currentPosition}px. You lost ${validBetAmount} credits. Current balance: ${gameData.balance.toFixed(2)} credits.`);
-        
-        //     // Log crash position, multiplier, bet amount, and output
-        //     console.log(`Crash Position: ${currentPosition}px`);
-        //     console.log(`Multiplier: ${gameData.multiplier.toFixed(2)}`);
-        //     console.log(`Bet Amount: ${validBetAmount}`);
-        //     console.log(`Output: You lost ${validBetAmount} credits. Current balance: ${gameData.balance.toFixed(2)} credits.`);
-        
-        //     // Call displayResult() to update the results section
-        //     // displayResult(validBetAmount, crashMultiplier, 0, outcomeText); // Pass 0 as winnings for crash scenario
-        
-        //     // Update balance display
-        //     updateBalanceDisplay();
-        
-        //     // Show reset button
-        //     setResetBtn(true); // Show reset button
-        // }
-        // Update balance display
         updateBalanceDisplay();
     
         // Show reset button
@@ -407,17 +354,17 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         {
             const newGameData = Object.assign({}, prev);
             newGameData.isMoving = false;
-            newGameData.isCashedOut = false;
             newGameData.multiplier = 1;
             newGameData.betAmount = 1;
             newGameData.crashPosition = 0;
             return newGameData
         })
+        setIsCashedOut(false);
         currentPosition = 0
         // Clear result message
         setResult('');
   
-        // Get current player data
+        // Get current player datas
         const currentPlayerData = players[playerId];
   
         // Increment games played count only if a new game session has started
@@ -431,16 +378,6 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             setBalanceDisplay(`Balance: ${updatedBalance.toFixed(2)} credits`);
             // displayLeaderboard(); // Update leaderboard
         }
-  
-        // Inside resetGameAndUpdatePlayerData() function
-        console.log('Before resetting isNewGameSession:', gameData.isNewGameSession);
-        setGameData(prev => {
-            const newGameData = Object.assign({}, prev);
-            newGameData.isNewGameSession = false;
-            return newGameData
-        }) // Reset isNewGameSession flag
-        console.log('After resetting isNewGameSession:', gameData.isNewGameSession);
-  
   
         // Reset UI elements
         setMultiplierDisplay(gameData.multiplier);
@@ -478,16 +415,19 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   
     const cashOutBtnOnclick = () => {
-        if (gameData.isMoving && !gameData.isCashedOut) { // Check if the game is in progress and not already cashed out
+        if (gameData.isMoving && !isCashedOut) { // Check if the game is in progress and not already cashed out
             setGameData(prev => {
                 const newGameData = Object.assign({}, prev);
-                newGameData.isMoving = false;
-                newGameData.isCashedOut = true;
+                // newGameData.isMoving = false;
+                newGameData.crashMultiplier = gameData.multiplier
+                newGameData.balance = gameData.balance + gameData.betAmount*gameData.multiplier
+                //     const cashOutMultiplier = gameData.multiplier;
                 return newGameData
             })
-            stopGame(); // Stop the game immediately
+            setIsCashedOut(true);
+            // stopGame(); // Stop the game immediately
             // resetGameAndUpdatePlayerData(); // Update player data after each game session
-            console.log('Is Cashed Out:', gameData.isCashedOut);
+            console.log('Is Cashed Out:', isCashedOut);
         }
     };
   
@@ -508,6 +448,7 @@ export const GameContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             timerDisplay,
             horseResults,
             isReset,
+            isCashedOut,
             resetGameAndUpdatePlayerData,
             setCurrentBet,
             handleSelectHorse,

@@ -42,19 +42,19 @@ const PlayField = () => {
                             crash.style.display = 'none'
                         }, 3000)
                     }
-                    if (runningHorses.length) {
-                        runningHorses.forEach((el, index) => {
-                            if (el.running) {
-                               const horse = document.getElementById(`horse-${el.number}`)
+                    // if (runningHorses.length) {
+                    //     runningHorses.forEach((el, index) => {
+                    //         if (el.running) {
+                    //            const horse = document.getElementById(`horse-${el.number}`)
                    
-                               if (horse){
-                                //    setTimeout(() => {
-                                    horse.style.left = runningHorses.length > 1 ? `${(60/runningHorses.length)*(index+1)}%` : '50%'
-                                //    }, 3000)
-                               }
-                           }
-                        })
-                    }
+                    //            if (horse){
+                    //             //    setTimeout(() => {
+                    //                 horse.style.left = runningHorses.length > 1 ? `${(60/runningHorses.length)*(index+1)}%` : '50%'
+                    //             //    }, 3000)
+                    //            }
+                    //        }
+                    //     })
+                    // }
                 }
             })
         }
@@ -96,12 +96,20 @@ const PlayField = () => {
             const horse2 = document.getElementById('horse-2');
             const horse1 = document.getElementById('horse-1');
 
-            if (background && horse4 && horse3 && horse2 && horse1) {
+            if (background) {
                 background.style.animation = 'slide 5s ease-out';
-                horse4.style.animation = 'none';
-                horse3.style.animation = 'none';
-                horse2.style.animation = 'none';
+            }
+            if (horse1){
                 horse1.style.animation = 'none';
+            }
+            if (horse2){
+                horse2.style.animation = 'none';
+            }
+            if (horse3){
+                horse3.style.animation = 'none';
+            }
+            if (horse4) {
+                horse4.style.animation = 'none';
             }
         }
     }

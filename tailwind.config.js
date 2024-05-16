@@ -10,12 +10,15 @@ export default {
     colors: {
       black: '#000',
       white: '#FFF',
+      gray: '#D4D4D4',
       red: '#8F211D',
       orange: '#F57805',
+      orangeTinted: '#C7762A',
       blue: '#365787',
       lightblue: '#77BCED',
       lightblueBg: '#88C8EE',
       darkblue: '#272D4A',
+      cyan: '#74C8F8',
       green: '#16EE1E',
       yellow: '#FEC700',
 
@@ -28,6 +31,7 @@ export default {
     extend: {
       backgroundImage: {
         'win': 'url(./src/assets/images/WinBg.svg)',
+        'land': 'url(./src/assets/images/LandingBg.png), linear-gradient(270deg, #74C8F8, #FFFFFF)',
       },
     },
   },
