@@ -72,6 +72,7 @@ const PlayField = () => {
             const horse1 = document.getElementById('horse-1');
 
             if (finishLine) {
+                finishLine.style.left = '158px'
                 finishLine.style.animation = 'start 10s ease-in'
                 setTimeout(() => {
                     finishLine.style.visibility = 'hidden'
@@ -95,6 +96,7 @@ const PlayField = () => {
 
     const StopAnimation = () => {
         const background = document.getElementById("playfield-background");
+        const finishLine = document.getElementById('finish-line');
 
         if (background) {
             // background.style.animation = 'slide 10s ease-in infinite'
@@ -120,6 +122,10 @@ const PlayField = () => {
             if (horse4) {
                 horse4.style.animation = 'none';
             }
+        }
+        if (finishLine) {
+            finishLine.style.visibility = 'visible';
+            finishLine.style.animation = 'none';
         }
     }
 
