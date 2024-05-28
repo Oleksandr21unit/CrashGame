@@ -63,7 +63,7 @@ const BottomUI = () => {
                 <button
                     onClick={handleMinus}
                     disabled={isMoving}
-                    className={`w-[24px] h-[24px] text-center text-[20px] ${!isMoving ? 'bg-white' : 'bg-whiteOpaque'} rounded-[16px] flex items-center justify-center`}>
+                    className={`w-[24px] h-[24px] mt-0 text-center text-[20px] ${!isMoving ? 'bg-white' : 'bg-whiteOpaque'} rounded-[16px] flex items-center justify-center`}>
                     <p className='drop-shadow-lg'>-</p>
                 </button>
                 
@@ -74,7 +74,7 @@ const BottomUI = () => {
                 <button
                     onClick={handlePlus}
                     disabled={isMoving}
-                    className={`w-[24px] h-[24px] text-center text-[20px] ${!isMoving ? 'bg-white' : 'bg-whiteOpaque'} rounded-[16px] flex items-center justify-center`}>
+                    className={`w-[24px] h-[24px] mt-0 text-center text-[20px] ${!isMoving ? 'bg-white' : 'bg-whiteOpaque'} rounded-[16px] flex items-center justify-center`}>
                     <p className='drop-shadow-lg'>+</p>
                 </button>
             </div>
@@ -110,7 +110,7 @@ const BottomUI = () => {
                 {!isMoving && !resetBtn ? <button
                     onClick={betBtnOnclick}
                     disabled={!selectedHorse || currentBet < 1}
-                    className={`text-darkblue uppercase w-full rounded-[4px] font-[700] text-[24px] ${!selectedHorse || !currentBet ? 'bg-disabledGreen' : "bg-green"}`}
+                    className={`text-darkblue mt-0 uppercase w-full rounded-[4px] font-[700] text-[24px] ${!selectedHorse || !currentBet ? 'bg-disabledGreen' : "bg-green"}`}
                 >
                     Bet
                 </button>
