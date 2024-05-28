@@ -3,6 +3,7 @@ import Horse1 from './../../assets/images/horses/Horse1.svg?react'
 import Horse2 from './../../assets/images/horses/Horse2.svg?react'
 import Horse3 from './../../assets/images/horses/Horse3.svg?react'
 import Horse4 from './../../assets/images/horses/Horse4.svg?react'
+import FinishLine from './../../assets/images/FinishLine.svg?react'
 import HorseCrash from './../../assets/images/HorseCrash.svg'
 import { GameContext } from '../../context/GameContext'
 import { useContext, useEffect, useState } from 'react'
@@ -64,10 +65,18 @@ const PlayField = () => {
         if (!animationRunning) {
             setAnmationRunning(true)
             const background = document.getElementById("playfield-background");
+            const finishLine = document.getElementById('finish-line');
             const horse4 = document.getElementById('horse-4');
             const horse3 = document.getElementById('horse-3');
             const horse2 = document.getElementById('horse-2');
             const horse1 = document.getElementById('horse-1');
+
+            if (finishLine) {
+                finishLine.style.animation = 'start 10s ease-in'
+                setTimeout(() => {
+                    finishLine.style.visibility = 'hidden'
+                }, 5000)
+            }
 
             if (background && horse4 && horse3 && horse2 && horse1) {
                 background.style.animation = 'slide 10s ease-in infinite'
@@ -118,7 +127,7 @@ const PlayField = () => {
         <div
             style={{
                 backgroundImage: `url(${RaceTrack})`,
-                backgroundPositionX: '470px',
+                backgroundPositionX: '0px',
                 zIndex: 10,
                 // animation: 'slide 15s ease-in-out infinite',
             }}
@@ -131,14 +140,16 @@ const PlayField = () => {
                 id='horse-4'
                 style={{
                     left: !animationRunning ? '60px' : '15px',
-                    transition: 'left 6s ease-in-out'
+                    transition: 'left 6s ease-in-out',
+                    zIndex: 3
                 }}
             />
             <div
                 className='absolute bottom-[60%] sm:bottom-[68%] w-[182px] h-[154px] flex items-center justify-center'
                 style={{
                     backgroundImage: `url(${HorseCrash})`,
-                    display: 'none'
+                    display: 'none',
+                    zIndex: 4
                 }}
                 id='horse_crash-4'
             >
@@ -152,14 +163,16 @@ const PlayField = () => {
                 id='horse-3'
                 style={{
                     left: !animationRunning ? '45px' : '45%',
-                    transition: 'left 6s ease-in-out'
+                    transition: 'left 6s ease-in-out',
+                    zIndex: 3
                 }}
             />
             <div
                 className='absolute bottom-[40%] sm:bottom-[48%] w-[182px] h-[154px] flex items-center justify-center'
                 style={{
                     backgroundImage: `url(${HorseCrash})`,
-                    display: 'none'
+                    display: 'none',
+                    zIndex: 4
                 }}
                 id='horse_crash-3'
             >
@@ -173,7 +186,8 @@ const PlayField = () => {
                 id='horse-2'
                 style={{
                     left: !animationRunning ? '30px' : '60%',
-                    transition: 'left 6s ease-in-out'
+                    transition: 'left 6s ease-in-out',
+                    zIndex: 3
                 }}
             />
             <div
@@ -181,6 +195,7 @@ const PlayField = () => {
                 style={{
                     backgroundImage: `url(${HorseCrash})`,
                     display: 'none',
+                    zIndex: 4,
                 }}
                 id='horse_crash-2'
             >
@@ -194,14 +209,16 @@ const PlayField = () => {
                 id='horse-1'
                 style={{
                     left: !animationRunning ? '15px' : '25%',
-                    transition: 'left 6s ease-in-out'
+                    transition: 'left 6s ease-in-out',
+                    zIndex: 3
                 }}
             />
             <div
                 className='absolute bottom-[0] sm:bottom-[8%] w-[182px] h-[154px] flex items-center justify-center'
                 style={{
                     backgroundImage: `url(${HorseCrash})`,
-                    display: 'none'
+                    display: 'none',
+                    zIndex: 4
                 }}
                 id='horse_crash-1'
             >
@@ -210,6 +227,16 @@ const PlayField = () => {
                     className='drop-shadow-lg'
                 /> */}
             </div>
+
+            <FinishLine 
+                id="finish-line"
+                style={{
+                    position: 'absolute',
+                    left: '158px',
+                    top: '38px',
+                    zIndex: 2,
+                }}
+            />
 
             {/*  */}
         </div>

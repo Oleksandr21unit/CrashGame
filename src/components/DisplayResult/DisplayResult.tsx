@@ -17,7 +17,7 @@ const DisplayResult = () => {
             }
         >
             <div className={`border-[2px] border-b-[1px] border-solid border-white uppercase rounded-t-[8px] ${isCrashed ? 'text-yellow text-[24px] border-yellow' : 'text-white text-[18px]'}`}>
-                {selectedHorse && !isCrashed && isCashedOut ? `${isLastHorse && "Bonus Round"} Horse No.${selectedHorse}` : 'You crashed' }
+                {selectedHorse && !isCrashed && isCashedOut ? `${isLastHorse ? "Bonus Round" : ''} Horse No.${selectedHorse}` : 'You crashed' }
             </div>
             <div className={`border-[2px] border-solid border-white uppercase rounded-b-[8px] ${isCrashed ? 'text-white text-[18px] border-yellow' : (isLastHorse ? 'text-darkblue bg-yellow text-[24px]' : 'text-yellow text-[24px] ')}`}>
                 {selectedHorse && !isCrashed && isCashedOut ? `You won ${(betAmount*crashMultiplier).toFixed(2)}` : `At ${gameData.crashMultiplier.toFixed(2)}X`}

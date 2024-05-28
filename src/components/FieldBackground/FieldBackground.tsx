@@ -10,7 +10,7 @@ import "./animation.css";
 
 const FieldBackground = () => {
     const {gameData, multiplierDisplay, selectedHorse, horseResults, isCashedOut} = useContext(GameContext);
-    const {isMoving, isNewGameSession, isCrashed} = gameData
+    const {isMoving, isCrashed} = gameData
     const [animationRunning, setAnmationRunning] = useState(false)
     const [isReadyMessage, setIsReadyMessage] = useState(false)
     const [multiplierValue, setMultiplierValue] = useState(multiplierDisplay);
@@ -82,7 +82,7 @@ const FieldBackground = () => {
         setTimeout(() => {
             setIsReadyMessage(false)
             setAnmationRunning(true)
-        }, 3000)
+        }, 5000)
         const fieldBg1 = document.getElementById("field-bg-1");
         const fieldBg2 = document.getElementById("field-bg-2");
         const fieldBg3 = document.getElementById("field-bg-3");
@@ -112,8 +112,8 @@ const FieldBackground = () => {
         const fieldBg3 = document.getElementById("field-bg-3");
         const fieldBg4 = document.getElementById("field-bg-4");
 
+        setAnmationRunning(false);
         if (fieldBg1 && fieldBg2 && fieldBg3 && fieldBg4) {
-            setAnmationRunning(false);
             fieldBg1.style.animation = 'slide 9s ease-out';
             fieldBg2.style.animation = 'slide 7s ease-out';
             fieldBg3.style.animation = 'slide 5s ease-out';
@@ -124,7 +124,7 @@ const FieldBackground = () => {
     return (
         <div className='relative h-[40%] overflow-hidden'>
 
-            {!isNewGameSession && !(isCashedOut || isCrashed) ?
+            {!animationRunning && !(isCashedOut || isCrashed) ?
                 <div className='absolute z-[5] top-[16px] h-[62px] w-[80%] mx-[10%] flex items-center justify-center bg-whiteOpaque rounded-[16px]'>
                     {!isReadyMessage ?
                         <p className='uppercase font-[700] text-[25px]'>
@@ -142,7 +142,7 @@ const FieldBackground = () => {
                         className='w-full z-[10] absolute top-[16px] w-full text-center text-darkblue uppercase font-[800] text-[48px]'
                         id='multiplierValue'
                         >
-                        {multiplierValue && multiplierValue.toFixed(2)}X
+                        {multiplierValue && !isDisplayResult ? `${multiplierValue.toFixed(2)}X` : ''}
                     </p>
                     <StarBonusIcon
                         id='starBonus'

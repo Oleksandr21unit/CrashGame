@@ -67,7 +67,7 @@ const BottomUI = () => {
                     <p className='drop-shadow-lg'>-</p>
                 </button>
                 
-                <div className='text-white font-[700] text-[24px]'>
+                <div className={`${!isMoving ? 'text-white' : 'text-whiteOpaque'} font-[700] text-[24px]`}>
                     {currentBet.toFixed(2)}
                 </div>
                 
@@ -109,7 +109,8 @@ const BottomUI = () => {
             <div className='bg-darkblue rounded-[8px] w-full flex justify-between p-[6px] mt-[8px] flex flex-wrap gap-[4px]'>
                 {!isMoving && !resetBtn ? <button
                     onClick={betBtnOnclick}
-                    className='bg-green text-darkblue uppercase w-full rounded-[4px] font-[700] text-[24px]'
+                    disabled={!selectedHorse || currentBet < 1}
+                    className={`text-darkblue uppercase w-full rounded-[4px] font-[700] text-[24px] ${!selectedHorse || !currentBet ? 'bg-disabledGreen' : "bg-green"}`}
                 >
                     Bet
                 </button>

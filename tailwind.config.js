@@ -20,6 +20,7 @@ export default {
       darkblue: '#272D4A',
       cyan: '#74C8F8',
       green: '#16EE1E',
+      disabledGreen: '#549956',
       yellow: '#FEC700',
 
       backdropColor: 'rgba(0,0,0, 0.4)',

@@ -1,11 +1,21 @@
 @keyframes slide {
-    from { background-position: 470 0; }
+    from { background-position: 0 0; }
     to { background-position: -1536px 0; }
 }
 
 @-webkit-keyframes slide {
-    from { background-position: 470 0; }
+    from { background-position: 0 0; }
     to { background-position: -1536px 0; }
+}
+
+@keyframes start {
+    from { left: 158px; }
+    to { left: -1378px ; }
+}
+
+@-webkit-keyframes start {
+    from { left: 158px; }
+    to { left: -1378px ; }
 }
 
 @keyframes shake {
